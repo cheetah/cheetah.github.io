@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="FEN Flipper">
+
+  <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+    integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js"
+    integrity="sha512-1lagjLfnC1I0iqH9plHYIUq3vDMfjhZsLy9elfK89RBcpcRcx4l+kRJBSnHh2Mh6kLxRHoObD1M5UTUbgFy6nA=="
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+    integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+    crossorigin="anonymous"></script>
+
+  <style>
+    #fen {
+      margin: 10px auto;
+      width: 500px;
+      height: 30px;
+      font-size: 14pt;
+    }
+
+    .controls {
+      width: 100vw;
+      position: relative;
+
+      display: flex;
+      flex-flow: column wrap;
+      align-items: center;
+    }
+
+    .container {
+      margin: 10px auto;
+      width: 600px;
+      height: 600px;
+      display: grid;
+      grid-template-columns: 300px 300px;
+      grid-row: auto auto;
+      grid-column-gap: 20px;
+      grid-row-gap: 20px;
+    }
+
+    .board {
+      width: 300px;
+    }
+
+    .main {
+      border: 2px solid;
+      border-color: black;
+    }
+  </style>
+
+  <title>FEN Flipper</title>
+</head>
+
+<body>
+  <div class="controls">
+    <input id="fen" type="text" value="8/8/8/8/4k3/4p3/4K3/8" />
+  </div>
+  <div class="container">
+    <div>
+      <span id="f2">8/8/8/8/8/8/8/8</span>
+      <div id="b2" class="board"></div>
+    </div>
+    <div>
+      <span id="f4">8/8/8/8/8/8/8/8</span>
+      <div id="b4" class="board"></div>
+    </div>
+    <div>
+      <span id="f1">8/8/8/8/8/8/8/8</span>
+      <div id="b1" class="board main"></div>
+    </div>
+    <div>
+      <span id="f3">8/8/8/8/8/8/8/8</span>
+      <div id="b3" class="board"></div>
+    </div>
+  </div>
+</body>
+
+<script>
+  var b1 = Chessboard("b1")
+  var b2 = Chessboard("b2")
+  var b3 = Chessboard("b3")
+  var b4 = Chessboard("b4")
+
+  var inverseCase = function (str) {
+    return str.split("").
+      map(function (x) {
+        if (x == x.toUpperCase()) {
+          return x.toLowerCase()
+        }
+
+        return x.toUpperCase()
+      }).
+      join("")
+  }
+
+  var flip = function (fen) {
+    return fen.split("/").
+      reverse().
+      map(function (x) {
+        return inverseCase(x)
+      }).
+      join("/")
+  }
+
+  var mirror = function (fen) {
+    return fen.split("/").
+      map(function (x) {
+        return x.split("").reverse().join("")
+      }).
+      join("/")
+  }
+
+  var handle = function (fen) {
+    var f1 = fen
+    var f2 = flip(fen)
+    var f3 = mirror(fen)
+    var f4 = mirror(flip(fen))
+
+    $("#f1").text(f1)
+    $("#f2").text(f2)
+    $("#f3").text(f3)
+    $("#f4").text(f4)
+
+    b1.position(f1, false)
+    b2.position(f2, false)
+    b3.position(f3, false)
+    b4.position(f4, false)
+  }
+
+  $("#fen").on("input", function () {
+    handle($(this).val())
+  });
+
+  handle($("#fen").val())
+</script>
+
+</html>
